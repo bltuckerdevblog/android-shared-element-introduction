@@ -1,11 +1,11 @@
 package com.bltucker.transitiontutorial.teamlist;
 
 
-import com.bltucker.transitiontutorial.ActivityScope;
+import com.bltucker.transitiontutorial.FragmentScope;
 
 import dagger.Module;
 
-@ActivityScope
+@FragmentScope
 @Module
 public class TeamListActivityModule {
 }

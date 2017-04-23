@@ -3,9 +3,12 @@ package com.bltucker.transitiontutorial.teamlist;
 
 import android.support.annotation.Nullable;
 
-import com.bltucker.transitiontutorial.ActivityScope;
+import com.bltucker.transitiontutorial.FragmentScope;
 import com.bltucker.transitiontutorial.FootballDataApi;
 import com.bltucker.transitiontutorial.data.TeamListResponse;
+import com.bltucker.transitiontutorial.data.TeamsItem;
+
+import java.util.ArrayList;
 
 import javax.inject.Inject;
 
@@ -16,7 +19,7 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
-@ActivityScope
+@FragmentScope
 public class TeamListPresenter {
 
     private final TeamListModel teamListModel;
@@ -33,8 +36,11 @@ public class TeamListPresenter {
 
 
     void onViewCreated(TeamListView view){
-        this.presentedView = view;
+        presentedView = view;
 
+        presentedView.displayModel(teamListModel);
+
+        final long syncTime = System.currentTimeMillis();
         this.footballDataApi.getTeamList()
             .observeOn(AndroidSchedulers.mainThread())
             .subscribeOn(Schedulers.io())
@@ -46,13 +52,31 @@ public class TeamListPresenter {
 
                 @Override
                 public void onSuccess(@NonNull TeamListResponse teamListResponse) {
-                    //TODO
+
+
+                    if(presentedView != null){
+
+                        TeamListModel updatedModel = new TeamListModel(syncTime, false, null, false, teamListResponse.getTeams());
+                        presentedView.displayModel(updatedModel);
+
+                    }
+
 
                 }
 
                 @Override
                 public void onError(@NonNull Throwable e) {
                     Timber.e(e, "Error retrieving team list");
+
+                    if(presentedView != null){
+
+                        TeamListModel updatedModel = new TeamListModel(syncTime, true, "Error getting team list", false, new ArrayList<TeamsItem>());
+
+
+                        presentedView.displayModel(updatedModel);
+                    }
+
+
                 }
             });
 
@@ -72,5 +96,6 @@ public class TeamListPresenter {
     void onViewPaused(){
         this.presentedView = null;
     }
+
 
 }

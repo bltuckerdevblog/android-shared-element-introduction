@@ -1,13 +1,13 @@
 package com.bltucker.transitiontutorial.teamlist;
 
 
-import com.bltucker.transitiontutorial.ActivityScope;
+import com.bltucker.transitiontutorial.FragmentScope;
 
 import dagger.BindsInstance;
 import dagger.Subcomponent;
 
-@ActivityScope
-@Subcomponent(modules = {TeamListActivityModule.class})
+@FragmentScope
+@Subcomponent(modules = {TeamListFragmentModule.class})
 public interface TeamListActivityComponent {
 
 
