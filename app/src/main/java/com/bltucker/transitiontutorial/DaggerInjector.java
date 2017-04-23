@@ -10,7 +10,7 @@ public class DaggerInjector {
     }
 
 
-    public ApplicationComponent getApplicationComponent(){
+    public static ApplicationComponent getApplicationComponent(){
         return applicationComponent;
     }
 

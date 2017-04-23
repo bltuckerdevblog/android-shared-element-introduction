@@ -1,9 +1,14 @@
 package com.bltucker.transitiontutorial;
 
+import javax.inject.Singleton;
+
 import dagger.BindsInstance;
 import dagger.Component;
 
-@Component(modules = {ApplicationResourcesModule.class})
+@Singleton
+@Component(
+    modules = {ApplicationResourcesModule.class,
+                SubcomponentModule.class})
 public interface ApplicationComponent {
 
     @Component.Builder
