@@ -8,12 +8,14 @@ import dagger.Subcomponent;
 
 @FragmentScope
 @Subcomponent(modules = {TeamListFragmentModule.class})
-public interface TeamListActivityComponent {
+public interface TeamListFragmentComponent {
 
+    void inject(TeamListFragment teamListFragment);
 
     @Subcomponent.Builder
     interface Builder {
-        @BindsInstance Builder teamListActivity(TeamListActivity activity);
-        TeamListActivityComponent build();
+        @BindsInstance Builder teamListFragment(TeamListFragment fragment);
+        TeamListFragmentComponent.Builder teamListFragmentModule(TeamListFragmentModule module);
+        TeamListFragmentComponent build();
     }
 }

@@ -11,6 +11,8 @@ import dagger.Module;
 import dagger.Provides;
 import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
+import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 @Module
 @Singleton
@@ -48,6 +50,8 @@ class ApplicationResourcesModule {
     Retrofit provideRetrofitClient(OkHttpClient okHttpClient){
         return new Retrofit.Builder()
             .baseUrl("http://football-data.org/v1/")
+            .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+            .addConverterFactory(GsonConverterFactory.create())
             .client(okHttpClient)
             .build();
     }

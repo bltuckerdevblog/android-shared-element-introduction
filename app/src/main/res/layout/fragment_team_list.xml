@@ -1,0 +1,54 @@
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools">
+
+
+    <data>
+
+        <import type="android.view.View"/>
+
+        <variable
+            name="model"
+            type="com.bltucker.transitiontutorial.teamlist.TeamListModel"/>
+
+    </data>
+
+    <FrameLayout
+                 android:layout_width="match_parent"
+                 android:layout_height="match_parent"
+                 tools:context="com.bltucker.transitiontutorial.teamlist.TeamListFragment">
+
+
+        <ProgressBar
+            android:id="@+id/loading_spinner"
+            android:indeterminate="true"
+            android:visibility="@{model.loading ? View.VISIBLE : View.INVISIBLE}"
+            android:layout_gravity="center"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+
+        <TextView
+            android:id="@+id/error_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="@{model.error ? View.VISIBLE : View.INVISIBLE}"
+            android:text="@string/team_list_error_message"
+            tools:text="@string/team_list_error_message"
+            style="@style/TextAppearance.AppCompat.Title"
+            android:layout_gravity="center"
+            />
+
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/team_list_recycler_view"
+            android:visibility="@{!model.error &amp;&amp; !model.loading ? View.VISIBLE : View.INVISIBLE}"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+
+    </FrameLayout>
+
+
+
+</layout>
+

@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">TransitionTutorial</string>
+    <string name="team_list_error_message">The team list is currently unavailable.</string>
 </resources>

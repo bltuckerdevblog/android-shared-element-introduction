@@ -20,7 +20,7 @@ import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
 @FragmentScope
-public class TeamListPresenter {
+public class TeamListViewPresenter {
 
     private final TeamListModel teamListModel;
     private final FootballDataApi footballDataApi;
@@ -29,7 +29,7 @@ public class TeamListPresenter {
     private TeamListView presentedView;
 
     @Inject
-    public TeamListPresenter(TeamListModel teamListModel, FootballDataApi footballDataApi){
+    TeamListViewPresenter(TeamListModel teamListModel, FootballDataApi footballDataApi){
         this.teamListModel = teamListModel;
         this.footballDataApi = footballDataApi;
     }
@@ -37,31 +37,25 @@ public class TeamListPresenter {
 
     void onViewCreated(TeamListView view){
         presentedView = view;
-
         presentedView.displayModel(teamListModel);
+        loadTeamList();
+    }
 
+    private void loadTeamList() {
         final long syncTime = System.currentTimeMillis();
         this.footballDataApi.getTeamList()
             .observeOn(AndroidSchedulers.mainThread())
             .subscribeOn(Schedulers.io())
             .subscribe(new SingleObserver<TeamListResponse>() {
                 @Override
-                public void onSubscribe(@NonNull Disposable d) {
-
-                }
+                public void onSubscribe(@NonNull Disposable d) { }
 
                 @Override
                 public void onSuccess(@NonNull TeamListResponse teamListResponse) {
-
-
                     if(presentedView != null){
-
                         TeamListModel updatedModel = new TeamListModel(syncTime, false, null, false, teamListResponse.getTeams());
                         presentedView.displayModel(updatedModel);
-
                     }
-
-
                 }
 
                 @Override
@@ -69,20 +63,11 @@ public class TeamListPresenter {
                     Timber.e(e, "Error retrieving team list");
 
                     if(presentedView != null){
-
                         TeamListModel updatedModel = new TeamListModel(syncTime, true, "Error getting team list", false, new ArrayList<TeamsItem>());
-
-
                         presentedView.displayModel(updatedModel);
                     }
-
-
                 }
             });
-
-
-
-
     }
 
     void onViewRestored(TeamListView view){

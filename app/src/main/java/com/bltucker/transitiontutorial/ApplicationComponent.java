@@ -1,5 +1,7 @@
 package com.bltucker.transitiontutorial;
 
+import com.bltucker.transitiontutorial.teamlist.TeamListFragmentComponent;
+
 import javax.inject.Singleton;
 
 import dagger.BindsInstance;
@@ -10,6 +12,8 @@ import dagger.Component;
     modules = {ApplicationResourcesModule.class,
                 SubcomponentModule.class})
 public interface ApplicationComponent {
+
+    TeamListFragmentComponent.Builder teamListFragmentComponentBuilder();
 
     @Component.Builder
     interface Builder {
