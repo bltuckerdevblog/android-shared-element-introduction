@@ -4,6 +4,12 @@ package com.bltucker.transitiontutorial;
 import android.content.Context;
 import android.content.res.Resources;
 
+import com.bltucker.transitiontutorial.glide.SvgDecoder;
+import com.bltucker.transitiontutorial.glide.SvgDrawableTranscoder;
+import com.bumptech.glide.load.model.StreamEncoder;
+import com.bumptech.glide.load.resource.file.FileToStreamDecoder;
+import com.caverock.androidsvg.SVG;
+
 import javax.inject.Named;
 import javax.inject.Singleton;
 
@@ -62,4 +68,27 @@ class ApplicationResourcesModule {
         return retrofit.create(FootballDataApi.class);
     }
 
+    @Provides
+    @Singleton
+    SvgDecoder provideSvgDecoder(){
+        return new SvgDecoder();
+    }
+
+    @Provides
+    @Singleton
+    FileToStreamDecoder<SVG> provideFileToStreamDecoder(SvgDecoder svgDecoder){
+        return new FileToStreamDecoder<>(svgDecoder);
+    }
+
+    @Provides
+    @Singleton
+    StreamEncoder provideStreamEncoder(){
+        return new StreamEncoder();
+    }
+
+    @Provides
+    @Singleton
+    SvgDrawableTranscoder provideSvgDrawableTranscoder(){
+        return new SvgDrawableTranscoder();
+    }
 }
