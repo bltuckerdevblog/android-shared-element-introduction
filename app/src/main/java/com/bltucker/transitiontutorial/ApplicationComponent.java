@@ -1,5 +1,6 @@
 package com.bltucker.transitiontutorial;
 
+import com.bltucker.transitiontutorial.teamdetail.TeamDetailFragmentComponent;
 import com.bltucker.transitiontutorial.teamlist.TeamListFragmentComponent;
 
 import javax.inject.Singleton;
@@ -14,6 +15,8 @@ import dagger.Component;
 public interface ApplicationComponent {
 
     TeamListFragmentComponent.Builder teamListFragmentComponentBuilder();
+    TeamDetailFragmentComponent.Builder teamDetailFragmentComponentBuilder();
+
 
     @Component.Builder
     interface Builder {

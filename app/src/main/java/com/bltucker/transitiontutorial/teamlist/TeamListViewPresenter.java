@@ -83,4 +83,9 @@ public class TeamListViewPresenter {
     }
 
 
+    void onTeamSelected(TeamsItem teamsItem, int teamIndex) {
+        if(presentedView != null){
+            presentedView.showTeamDetails(teamsItem, teamIndex);
+        }
+    }
 }

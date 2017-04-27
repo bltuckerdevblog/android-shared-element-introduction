@@ -1,4 +1,8 @@
 <resources>
     <string name="app_name">TransitionTutorial</string>
     <string name="team_list_error_message">The team list is currently unavailable.</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="team_crest_image_view">teamCrestImageView</string>
 </resources>

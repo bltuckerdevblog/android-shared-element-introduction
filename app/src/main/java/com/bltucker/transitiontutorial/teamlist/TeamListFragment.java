@@ -3,8 +3,11 @@ package com.bltucker.transitiontutorial.teamlist;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.DividerItemDecoration;
@@ -12,11 +15,16 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 
 import com.bltucker.transitiontutorial.DaggerInjector;
+import com.bltucker.transitiontutorial.data.TeamsItem;
 import com.bltucker.transitiontutorial.databinding.FragmentTeamListBinding;
+import com.bltucker.transitiontutorial.teamdetail.TeamDetailActivity;
 
 import javax.inject.Inject;
+
+import static android.support.v4.app.ActivityOptionsCompat.makeSceneTransitionAnimation;
 
 
 public class TeamListFragment extends Fragment implements TeamListView{
@@ -118,4 +126,16 @@ public class TeamListFragment extends Fragment implements TeamListView{
         teamListModel = updatedModel;
         teamListAdapter.updateAdapter(updatedModel);
     }
+
+    @Override
+    public void showTeamDetails(TeamsItem teamsItem, int teamIndex) {
+        TeamListAdapter.TeamListItemViewHolder viewHolder = (TeamListAdapter.TeamListItemViewHolder) binding.teamListRecyclerView.findViewHolderForAdapterPosition(teamIndex);
+
+        ImageView teamCrestImageView = viewHolder.getBinding().teamCrestImageView;
+        ActivityOptionsCompat options = makeSceneTransitionAnimation(getActivity(), teamCrestImageView, teamCrestImageView.getTransitionName());
+
+        Intent launchIntent = TeamDetailActivity.getLaunchIntent(getActivity(), teamsItem);
+        startActivity(launchIntent, options.toBundle());
+    }
+
 }

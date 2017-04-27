@@ -4,47 +4,68 @@ package com.bltucker.transitiontutorial.teamlist;
 import android.content.Context;
 import android.graphics.drawable.PictureDrawable;
 import android.net.Uri;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 
 import com.bltucker.transitiontutorial.FragmentScope;
+import com.bltucker.transitiontutorial.glide.GlideRequestProvider;
 import com.bltucker.transitiontutorial.data.TeamsItem;
 import com.bltucker.transitiontutorial.databinding.AdapterTeamListItemBinding;
-import com.bltucker.transitiontutorial.glide.SvgDecoder;
-import com.bltucker.transitiontutorial.glide.SvgDrawableTranscoder;
-import com.bltucker.transitiontutorial.glide.SvgSoftwareLayerSetter;
 import com.bumptech.glide.GenericRequestBuilder;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.bumptech.glide.load.model.StreamEncoder;
-import com.bumptech.glide.load.resource.file.FileToStreamDecoder;
+import com.bumptech.glide.request.FutureTarget;
 import com.caverock.androidsvg.SVG;
 
 import java.io.InputStream;
 
 import javax.inject.Inject;
 
+import io.reactivex.Observable;
+import io.reactivex.Observer;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
+
 @FragmentScope
 class TeamListAdapter extends RecyclerView.Adapter<TeamListAdapter.TeamListItemViewHolder> {
 
     private TeamListModel teamListModel;
+    private final TeamListViewPresenter presenter;
+    private final GlideRequestProvider glideRequestProvider;
 
     @Inject
-    TeamListAdapter(TeamListModel teamListModel) {
+    TeamListAdapter(TeamListModel teamListModel,
+                    TeamListViewPresenter presenter,
+                    GlideRequestProvider glideRequestProvider) {
         this.teamListModel = teamListModel;
+        this.presenter = presenter;
+        this.glideRequestProvider = glideRequestProvider;
     }
 
     void updateAdapter(TeamListModel model) {
         this.teamListModel = model;
         notifyDataSetChanged();
-        //TODO do a diff here
     }
 
     @Override
     public TeamListItemViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         AdapterTeamListItemBinding binding = AdapterTeamListItemBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false);
-        return new TeamListItemViewHolder(binding);
+        final TeamListItemViewHolder teamListItemViewHolder = new TeamListItemViewHolder(binding, glideRequestProvider);
+
+        binding.teamItemContainer.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int adapterPosition = teamListItemViewHolder.getAdapterPosition();
+                presenter.onTeamSelected(teamListModel.getTeamList().get(adapterPosition), adapterPosition);
+            }
+        });
+
+        return teamListItemViewHolder;
     }
 
     @Override
@@ -67,10 +88,16 @@ class TeamListAdapter extends RecyclerView.Adapter<TeamListAdapter.TeamListItemV
     static class TeamListItemViewHolder extends RecyclerView.ViewHolder {
 
         private final AdapterTeamListItemBinding binding;
+        private final GlideRequestProvider glideRequestProvider;
 
-        TeamListItemViewHolder(AdapterTeamListItemBinding binding) {
+        TeamListItemViewHolder(AdapterTeamListItemBinding binding, GlideRequestProvider glideRequestProvider) {
             super(binding.getRoot());
             this.binding = binding;
+            this.glideRequestProvider = glideRequestProvider;
+        }
+
+        AdapterTeamListItemBinding getBinding() {
+            return binding;
         }
 
         void bind(TeamsItem team) {
@@ -82,7 +109,6 @@ class TeamListAdapter extends RecyclerView.Adapter<TeamListAdapter.TeamListItemV
             } else {
                 handlePng(team);
             }
-
         }
 
         private void handlePng(TeamsItem team) {
@@ -93,21 +119,40 @@ class TeamListAdapter extends RecyclerView.Adapter<TeamListAdapter.TeamListItemV
 
         private void handleSvg(TeamsItem team, Context context) {
             GenericRequestBuilder<Uri, InputStream, SVG, PictureDrawable>
-                requestBuilder = Glide.with(context)
-                .using(Glide.buildStreamModelLoader(Uri.class, context), InputStream.class)
-                .from(Uri.class)
-                .as(SVG.class)
-                .transcode(new SvgDrawableTranscoder(), PictureDrawable.class)
-                .sourceEncoder(new StreamEncoder())
-                .cacheDecoder(new FileToStreamDecoder<>(new SvgDecoder()))
-                .decoder(new SvgDecoder())
-                .listener(new SvgSoftwareLayerSetter());
+                requestBuilder = glideRequestProvider.getGenericRequest(context);
 
             Uri uri = Uri.parse(team.getCrestUrl());
-            requestBuilder
+
+            FutureTarget<PictureDrawable> future = requestBuilder
                 .diskCacheStrategy(DiskCacheStrategy.SOURCE)
+                .skipMemoryCache(true)
+                .dontAnimate()
                 .load(uri)
-                .into(binding.teamCrestImageView);
+                .into(48, 48);
+
+            Observable.fromFuture(future)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<PictureDrawable>() {
+                    @Override
+                    public void onSubscribe(@NonNull Disposable d) {
+
+                    }
+
+                    @Override
+                    public void onNext(@NonNull PictureDrawable pictureDrawable) {
+                        binding.teamCrestImageView.setLayerType(ImageView.LAYER_TYPE_SOFTWARE, null);
+                        binding.teamCrestImageView.setImageDrawable(pictureDrawable);
+                    }
+
+                    @Override
+                    public void onError(@NonNull Throwable e) {
+                    }
+
+                    @Override
+                    public void onComplete() {
+                    }
+                });
         }
 
     }
