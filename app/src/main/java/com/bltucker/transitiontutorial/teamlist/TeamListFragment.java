@@ -15,6 +15,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -28,11 +29,11 @@ import javax.inject.Inject;
 import static android.support.v4.app.ActivityOptionsCompat.makeSceneTransitionAnimation;
 
 
-public class TeamListFragment extends Fragment implements TeamListView{
+public class TeamListFragment extends Fragment implements TeamListView {
 
     public static final String TAG = "teamListFragment";
 
-    public static TeamListFragment newInstance(){
+    public static TeamListFragment newInstance() {
         return new TeamListFragment();
     }
 
@@ -63,7 +64,7 @@ public class TeamListFragment extends Fragment implements TeamListView{
     private void setupDaggerComponent(Context context) {
         TeamListModel retainedModel = null;
 
-        if(context instanceof Activity){
+        if (context instanceof Activity) {
             retainedModel = (TeamListModel) ((FragmentActivity) context).getLastCustomNonConfigurationInstance();
         }
 
@@ -79,7 +80,7 @@ public class TeamListFragment extends Fragment implements TeamListView{
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        if(savedInstanceState != null){
+        if (savedInstanceState != null) {
             presenter.onViewRestored(this);
         } else {
             presenter.onViewCreated(this);
@@ -134,9 +135,14 @@ public class TeamListFragment extends Fragment implements TeamListView{
 
         ImageView teamCrestImageView = viewHolder.getBinding().teamCrestImageView;
         TextView teamNameTextView = viewHolder.getBinding().teamNameTextview;
+        View statusBarBackground = getActivity().findViewById(android.R.id.statusBarBackground);
+        View navigationBarBackground = getActivity().findViewById(android.R.id.navigationBarBackground);
 
-        Pair[] sharedElements = new Pair[]{new Pair<View,String>(teamCrestImageView, teamCrestImageView.getTransitionName()),
-        new Pair<View,String>(teamNameTextView, teamNameTextView.getTransitionName())};
+        Pair[] sharedElements = new Pair[]{new Pair<View, String>(teamCrestImageView, teamCrestImageView.getTransitionName()),
+            new Pair<View, String>(teamNameTextView, teamNameTextView.getTransitionName()),
+            new Pair<View,String>(statusBarBackground, Window.STATUS_BAR_BACKGROUND_TRANSITION_NAME),
+            new Pair<View,String>(navigationBarBackground, Window.NAVIGATION_BAR_BACKGROUND_TRANSITION_NAME)
+        };
         ActivityOptionsCompat options = makeSceneTransitionAnimation(getActivity(), sharedElements);
 
         Intent launchIntent = TeamDetailActivity.getLaunchIntent(getActivity(), teamsItem);
