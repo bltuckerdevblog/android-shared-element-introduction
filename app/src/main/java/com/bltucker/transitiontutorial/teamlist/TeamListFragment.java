@@ -6,16 +6,17 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.util.Pair;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.bltucker.transitiontutorial.DaggerInjector;
 import com.bltucker.transitiontutorial.data.TeamsItem;
@@ -132,7 +133,11 @@ public class TeamListFragment extends Fragment implements TeamListView{
         TeamListAdapter.TeamListItemViewHolder viewHolder = (TeamListAdapter.TeamListItemViewHolder) binding.teamListRecyclerView.findViewHolderForAdapterPosition(teamIndex);
 
         ImageView teamCrestImageView = viewHolder.getBinding().teamCrestImageView;
-        ActivityOptionsCompat options = makeSceneTransitionAnimation(getActivity(), teamCrestImageView, teamCrestImageView.getTransitionName());
+        TextView teamNameTextView = viewHolder.getBinding().teamNameTextview;
+
+        Pair[] sharedElements = new Pair[]{new Pair<View,String>(teamCrestImageView, teamCrestImageView.getTransitionName()),
+        new Pair<View,String>(teamNameTextView, teamNameTextView.getTransitionName())};
+        ActivityOptionsCompat options = makeSceneTransitionAnimation(getActivity(), sharedElements);
 
         Intent launchIntent = TeamDetailActivity.getLaunchIntent(getActivity(), teamsItem);
         startActivity(launchIntent, options.toBundle());

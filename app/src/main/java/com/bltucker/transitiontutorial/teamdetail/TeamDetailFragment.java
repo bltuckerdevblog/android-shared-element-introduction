@@ -7,10 +7,10 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 
 import com.bltucker.transitiontutorial.DaggerInjector;
 import com.bltucker.transitiontutorial.data.TeamsItem;
@@ -79,6 +79,7 @@ public class TeamDetailFragment extends Fragment implements TeamDetailView {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         binding = FragmentTeamDetailBinding.inflate(inflater, container, false);
+        ((AppCompatActivity) getActivity()).setSupportActionBar(binding.fragmentToolbar);
         return binding.getRoot();
     }
 
@@ -147,10 +148,7 @@ public class TeamDetailFragment extends Fragment implements TeamDetailView {
 
                 @Override
                 public void onNext(@NonNull PictureDrawable pictureDrawable) {
-//                    binding.teamCrestImageView.setLayerType(ImageView.LAYER_TYPE_SOFTWARE, null);
-
                     binding.teamCrestImageView.setImageDrawable(pictureDrawable);
-
                     getActivity().startPostponedEnterTransition();
                 }
 
