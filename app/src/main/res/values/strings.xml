@@ -6,4 +6,6 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="team_crest_image_view">teamCrestImageView</string>
     <string name="team_name_text_view">teamName</string>
+    <string name="team_crest_content_description">team crest</string>
+    <string name="jersey_number_formatter">#%1$s</string>
 </resources>

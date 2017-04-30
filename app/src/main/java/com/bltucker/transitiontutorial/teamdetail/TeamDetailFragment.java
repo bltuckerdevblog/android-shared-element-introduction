@@ -8,11 +8,14 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.DividerItemDecoration;
+import android.support.v7.widget.LinearLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.bltucker.transitiontutorial.DaggerInjector;
+import com.bltucker.transitiontutorial.data.PlayersItem;
 import com.bltucker.transitiontutorial.data.TeamsItem;
 import com.bltucker.transitiontutorial.databinding.FragmentTeamDetailBinding;
 import com.bltucker.transitiontutorial.glide.GlideRequestProvider;
@@ -22,6 +25,8 @@ import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.FutureTarget;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
+
+import java.util.ArrayList;
 
 import javax.inject.Inject;
 
@@ -41,10 +46,16 @@ public class TeamDetailFragment extends Fragment implements TeamDetailView {
     private FragmentTeamDetailBinding binding;
 
     @Inject
+    TeamDetailModel teamDetailModel;
+
+    @Inject
     TeamDetailViewPresenter viewPresenter;
 
     @Inject
     GlideRequestProvider glideRequestProvider;
+
+    @Inject
+    PlayerListAdapter playerListAdapter;
 
     public TeamDetailFragment() {
         // Required empty public constructor
@@ -61,10 +72,21 @@ public class TeamDetailFragment extends Fragment implements TeamDetailView {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        TeamsItem teamsItem = getArguments().getParcelable(TEAM_ITEM_ARG);
+
+        TeamDetailModel model = null;
+
+        if (context instanceof AppCompatActivity) {
+            model = (TeamDetailModel) ((AppCompatActivity) context).getLastCustomNonConfigurationInstance();
+        }
+
+        if (null == model) {
+            TeamsItem teamsItem = getArguments().getParcelable(TEAM_ITEM_ARG);
+            model = new TeamDetailModel(teamsItem, new ArrayList<PlayersItem>());
+        }
+
         DaggerInjector.getApplicationComponent()
             .teamDetailFragmentComponentBuilder()
-            .bindTeam(teamsItem)
+            .bindTeam(model)
             .build()
             .inject(this);
     }
@@ -80,6 +102,9 @@ public class TeamDetailFragment extends Fragment implements TeamDetailView {
                              Bundle savedInstanceState) {
         binding = FragmentTeamDetailBinding.inflate(inflater, container, false);
         ((AppCompatActivity) getActivity()).setSupportActionBar(binding.fragmentToolbar);
+        binding.playerListRecyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
+        binding.playerListRecyclerView.setAdapter(playerListAdapter);
+        binding.playerListRecyclerView.addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL));
         return binding.getRoot();
     }
 
@@ -95,15 +120,21 @@ public class TeamDetailFragment extends Fragment implements TeamDetailView {
     }
 
     @Override
-    public void displayTeamDetails(TeamsItem teamsItem) {
+    public void displayModel(TeamDetailModel detailModel) {
+        TeamsItem teamsItem = detailModel.getTeamsItem();
         binding.setTeamItem(teamsItem);
-        if (teamsItem.getCrestUrl().contains(".svg")) {
-            loadSvgCrest(teamsItem);
-        } else {
-            loadPngCrest(teamsItem);
-        }
-    }
 
+        playerListAdapter.updateModel(detailModel);
+
+        if(binding.teamCrestImageView.getDrawable() == null){
+            if (teamsItem.getCrestUrl().contains(".svg")) {
+                loadSvgCrest(teamsItem);
+            } else {
+                loadPngCrest(teamsItem);
+            }
+        }
+
+    }
 
     private void loadPngCrest(TeamsItem team) {
         Glide.with(binding.getRoot().getContext())
@@ -162,5 +193,9 @@ public class TeamDetailFragment extends Fragment implements TeamDetailView {
 
                 }
             });
+    }
+
+    public TeamDetailModel getDetailModel() {
+        return teamDetailModel;
     }
 }

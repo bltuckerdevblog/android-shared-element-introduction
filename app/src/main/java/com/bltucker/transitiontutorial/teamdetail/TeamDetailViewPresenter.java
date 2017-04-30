@@ -1,37 +1,70 @@
 package com.bltucker.transitiontutorial.teamdetail;
 
 
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import com.bltucker.transitiontutorial.FootballDataApi;
 import com.bltucker.transitiontutorial.FragmentScope;
-import com.bltucker.transitiontutorial.data.TeamsItem;
+import com.bltucker.transitiontutorial.data.PlayerListResponse;
 
 import javax.inject.Inject;
+
+import io.reactivex.SingleObserver;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
+import timber.log.Timber;
 
 @FragmentScope
 class TeamDetailViewPresenter {
 
-    private final TeamsItem teamsItem;
+    private TeamDetailModel detailModel;
+    private final FootballDataApi api;
     @Nullable
+    private
     TeamDetailView presentedView;
 
     @Inject
-    TeamDetailViewPresenter(TeamsItem teamsItem) {
-        this.teamsItem = teamsItem;
+    TeamDetailViewPresenter(TeamDetailModel detailModel, FootballDataApi api) {
+        this.detailModel = detailModel;
+        this.api = api;
     }
 
 
-    public void onViewCreated(TeamDetailView teamDetailView) {
+    void onViewCreated(@NonNull TeamDetailView teamDetailView) {
         presentedView = teamDetailView;
+        presentedView.displayModel(detailModel);
 
-        presentedView.displayTeamDetails(teamsItem);
+        api.getPlayerList(detailModel.getTeamsItem().getId())
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(new SingleObserver<PlayerListResponse>() {
+                @Override
+                public void onSubscribe(@io.reactivex.annotations.NonNull Disposable d) {
+
+                }
+
+                @Override
+                public void onSuccess(@io.reactivex.annotations.NonNull PlayerListResponse playerListResponse) {
+                    if(presentedView != null){
+                        detailModel = new TeamDetailModel(detailModel.getTeamsItem(), playerListResponse.getPlayers());
+                        presentedView.displayModel(detailModel);
+                    }
+                }
+
+                @Override
+                public void onError(@io.reactivex.annotations.NonNull Throwable e) {
+                    Timber.e(e, "Error getting player list");
+                }
+            });
     }
 
-    public void onViewResumed(TeamDetailView teamDetailView) {
+    void onViewResumed(@NonNull TeamDetailView teamDetailView) {
         presentedView = teamDetailView;
     }
 
-    public void onViewPaused() {
+    void onViewPaused() {
         presentedView = null;
     }
 

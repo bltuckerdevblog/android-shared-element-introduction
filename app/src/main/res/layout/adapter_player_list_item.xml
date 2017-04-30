@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+
+        <variable
+            name="playerItem"
+            type="com.bltucker.transitiontutorial.data.PlayersItem"/>
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="8dp"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/player_name_text_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start|top"
+            android:layout_marginBottom="8dp"
+            style="@style/TextAppearance.AppCompat.Large"
+            tools:text="Allan McGregor"
+            android:text="@{playerItem.name}"
+            />
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start|bottom"
+            android:orientation="horizontal"
+            >
+
+            <TextView
+                android:id="@+id/player_jersey_number_text_view"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+                android:layout_weight="2"
+                tools:text="#1"
+                android:text="@{@string/jersey_number_formatter(playerItem.jerseyNumber)}"
+                />
+
+
+            <TextView
+                android:id="@+id/player_nationality_text_view"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                android:layout_weight="1"
+                android:text="@{playerItem.nationality}"
+                tools:text="Scotland"
+                />
+
+
+        </LinearLayout>
+
+
+    </LinearLayout>
+
+</layout>

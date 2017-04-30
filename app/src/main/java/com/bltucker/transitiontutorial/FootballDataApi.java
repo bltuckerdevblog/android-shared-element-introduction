@@ -6,6 +6,7 @@ import com.bltucker.transitiontutorial.data.TeamListResponse;
 
 import io.reactivex.Single;
 import retrofit2.http.GET;
+import retrofit2.http.Path;
 
 public interface FootballDataApi {
 
@@ -13,5 +14,5 @@ public interface FootballDataApi {
     Single<TeamListResponse> getTeamList();
 
     @GET("teams/{teamId}/players")
-    Single<PlayerListResponse> getPlayerList(int teamId);
+    Single<PlayerListResponse> getPlayerList(@Path("teamId") int teamId);
 }

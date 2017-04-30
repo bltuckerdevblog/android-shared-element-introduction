@@ -16,7 +16,7 @@ public interface TeamDetailFragmentComponent {
 
     @Subcomponent.Builder
     interface Builder{
-        @BindsInstance TeamDetailFragmentComponent.Builder bindTeam(TeamsItem teamsItem);
+        @BindsInstance TeamDetailFragmentComponent.Builder bindTeam(TeamDetailModel model);
         TeamDetailFragmentComponent build();
     }
 

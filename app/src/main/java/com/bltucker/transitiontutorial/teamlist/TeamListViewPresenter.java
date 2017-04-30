@@ -2,6 +2,7 @@ package com.bltucker.transitiontutorial.teamlist;
 
 
 import android.support.annotation.Nullable;
+import android.support.v4.util.Pair;
 
 import com.bltucker.transitiontutorial.FragmentScope;
 import com.bltucker.transitiontutorial.FootballDataApi;
@@ -22,11 +23,12 @@ import timber.log.Timber;
 @FragmentScope
 public class TeamListViewPresenter {
 
-    private final TeamListModel teamListModel;
+    private TeamListModel teamListModel;
     private final FootballDataApi footballDataApi;
 
     @Nullable
     private TeamListView presentedView;
+    private boolean updateOnResume;
 
     @Inject
     TeamListViewPresenter(TeamListModel teamListModel, FootballDataApi footballDataApi){
@@ -53,8 +55,10 @@ public class TeamListViewPresenter {
                 @Override
                 public void onSuccess(@NonNull TeamListResponse teamListResponse) {
                     if(presentedView != null){
-                        TeamListModel updatedModel = new TeamListModel(syncTime, false, null, false, teamListResponse.getTeams());
-                        presentedView.displayModel(updatedModel);
+                        teamListModel = new TeamListModel(syncTime, false, null, false, teamListResponse.getTeams());
+                        presentedView.displayModel(teamListModel);
+                    } else{
+                        updateOnResume = true;
                     }
                 }
 
@@ -76,6 +80,10 @@ public class TeamListViewPresenter {
 
     void onViewResumed(TeamListView view){
         this.presentedView = view;
+        if(updateOnResume){
+            presentedView.displayModel(teamListModel);
+            updateOnResume = false;
+        }
     }
 
     void onViewPaused(){

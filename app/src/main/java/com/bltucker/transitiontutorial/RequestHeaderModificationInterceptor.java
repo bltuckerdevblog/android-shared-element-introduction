@@ -25,8 +25,7 @@ class RequestHeaderModificationInterceptor implements Interceptor {
     public Response intercept(Chain chain) throws IOException {
         Request request = chain.request().newBuilder()
             .addHeader("X-Auth-Token", apiKey)
-            //Note the api is currently broken when using this
-//            .addHeader("X-Response-Control", "minified")
+            .addHeader("X-Response-Control", "minified")
             .build();
 
         return chain.proceed(request);

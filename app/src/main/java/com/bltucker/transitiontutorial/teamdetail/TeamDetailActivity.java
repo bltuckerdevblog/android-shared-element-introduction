@@ -32,4 +32,15 @@ public class TeamDetailActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    public Object onRetainCustomNonConfigurationInstance() {
+        TeamDetailFragment fragmentByTag = (TeamDetailFragment) getSupportFragmentManager().findFragmentByTag(TeamDetailFragment.TAG);
+
+        if(fragmentByTag != null){
+            return fragmentByTag.getDetailModel();
+        } else {
+            return super.onRetainCustomNonConfigurationInstance();
+        }
+
+    }
 }

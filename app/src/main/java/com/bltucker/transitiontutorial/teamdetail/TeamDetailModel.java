@@ -6,22 +6,22 @@ import com.bltucker.transitiontutorial.data.TeamsItem;
 
 import java.util.List;
 
-class TeamDetailModel {
+public class TeamDetailModel {
 
     private final TeamsItem teamsItem;
 
     private final List<PlayersItem> playerList;
 
-    public TeamDetailModel(TeamsItem teamsItem, List<PlayersItem> players){
+    TeamDetailModel(TeamsItem teamsItem, List<PlayersItem> players){
         this.teamsItem = teamsItem;
         this.playerList = players;
     }
 
-    public TeamsItem getTeamsItem() {
+    TeamsItem getTeamsItem() {
         return teamsItem;
     }
 
-    public List<PlayersItem> getPlayerList() {
+    List<PlayersItem> getPlayerList() {
         return playerList;
     }
 }
